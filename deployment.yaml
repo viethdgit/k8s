@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+spec:
+  replicas: 1
+  selector:
+      matchLabels:
+        app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      volumes:
+      - name: nginx-conf
+        configMap:
+          name: nginx-conf
+          items:
+            - key: nginx.conf
+              path: nginx.conf
+            - key: web.conf
+              path: conf.d/web.conf
+            - key: fastcgi_params
+              path: fastcgi_params
+            - key: mime.types
+              path: mime.types
+      - name: log
+        emptyDir: {}
+      - name: web
+        configMap:
+          name: web
+          items:
+            - key: index.php
+              path: index.php
+      containers:
+      - name: php-fpm
+        image: php:fpm
+        ports:
+        - containerPort: 9000
+        volumeMounts:
+        - mountPath: /srv/www/web
+          name: web
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - mountPath: /etc/nginx
+          readOnly: true
+          name: nginx-conf
+        - mountPath: /var/log/nginx
+          name: log
+        - mountPath: /srv/www/web
+          name: web
