@@ -48,12 +48,12 @@ data:
                 index  index.html index.php index.htm;
                 autoindex off;
         }
-        #location ~ \.php$ {
-        #        fastcgi_pass   127.0.0.1:9000;
-        #        fastcgi_index  index.php;
-        #        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
-        #        include        fastcgi_params;
-        #}
+        location ~ \.php$ {
+                fastcgi_pass   127.0.0.1:9000;
+                fastcgi_index  index.php;
+                fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+                include        fastcgi_params;
+        }
     }
   mime.types: |
    types {
@@ -166,17 +166,3 @@ data:
     fastcgi_param  SERVER_NAME        $server_name;
     # PHP only, required if PHP was built with --enable-force-cgi-redirect
     fastcgi_param  REDIRECT_STATUS    200;
----	
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: web
-data:
-  index.php: |
-    <?php
-    // Show all information, defaults to INFO_ALL
-    phpinfo();
-    // Show just the module information.
-    // phpinfo(8) yields identical results.
-    phpinfo(INFO_MODULES);
-    ?>
