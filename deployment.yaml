@@ -28,11 +28,9 @@ spec:
       - name: log
         emptyDir: {}
       - name: web
-        configMap:
-          name: web
-          items:
-            - key: index.php
-              path: index.php
+        hostPath:
+          path: /srv/www/web/
+          type: Directory
       containers:
       - name: php-fpm
         image: php:fpm
